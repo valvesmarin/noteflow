@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { FlatList, TouchableOpacity } from 'react-native';
 import { useNotesStore, type Note } from '../../store/notesStore';
-import { Box, Heading, Text, Button, VStack } from '@gluestack-ui/themed';
+import { Card, Title, Text, Button, TextInput, IconButton } from 'react-native-paper';
 
 export default function NotasScreen() {
   const { notes, addNote, deleteNote } = useNotesStore();
@@ -25,75 +25,55 @@ export default function NotasScreen() {
   };
 
   return (
-    <Box flex={1} bg="$background" p="$4">
-      <Heading size="xl" mb="$6" color="$textDark">
-        📝 Minhas Notas
-      </Heading>
+    <Card style={{ flex: 1, margin: 12 }}>
+      <Card.Content>
+        <Title style={{ fontSize: 26, marginBottom: 16 }}>📝 Minhas Notas</Title>
 
-      <VStack space="md" mb="$6">
         <TextInput
-          placeholder="Título da nota"
+          label="Título da nota"
           value={title}
           onChangeText={setTitle}
-          style={{
-            backgroundColor: 'white',
-            padding: 12,
-            borderRadius: 8,
-            borderWidth: 1,
-            borderColor: '#e2e8f0',
-          }}
+          mode="outlined"
+          style={{ marginBottom: 12 }}
         />
 
         <TextInput
-          placeholder="Escreva sua nota aqui..."
+          label="Escreva sua nota aqui..."
           value={content}
           onChangeText={setContent}
           multiline
           numberOfLines={4}
-          style={{
-            backgroundColor: 'white',
-            padding: 12,
-            borderRadius: 8,
-            borderWidth: 1,
-            borderColor: '#e2e8f0',
-            minHeight: 100,
-          }}
+          mode="outlined"
+          style={{ marginBottom: 16 }}
         />
 
-        <Button onPress={handleAddNote}>
-          <Button.Text>Adicionar Nota</Button.Text>
+        <Button mode="contained" onPress={handleAddNote} style={{ marginBottom: 20 }}>
+          Adicionar Nota
         </Button>
-      </VStack>
 
-      <FlatList
-        data={notes}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Box
-            bg="$white"
-            p="$4"
-            mb="$3"
-            borderRadius="$md"
-            borderWidth={1}
-            borderColor="$borderLight"
-          >
-            <Heading size="md">{item.title}</Heading>
-            <Text numberOfLines={2} mt="$2" color="$textLight">
-              {item.content}
+        <FlatList
+          data={notes}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <Card style={{ marginBottom: 12 }}>
+              <Card.Content>
+                <Title>{item.title}</Title>
+                <Text style={{ marginTop: 8 }} numberOfLines={3}>
+                  {item.content}
+                </Text>
+                <TouchableOpacity onPress={() => deleteNote(item.id)}>
+                  <Text style={{ color: 'red', marginTop: 12 }}>Excluir</Text>
+                </TouchableOpacity>
+              </Card.Content>
+            </Card>
+          )}
+          ListEmptyComponent={
+            <Text style={{ textAlign: 'center', marginTop: 40, color: '#666' }}>
+              Nenhuma nota ainda. Crie a primeira acima!
             </Text>
-            <TouchableOpacity onPress={() => deleteNote(item.id)}>
-              <Text color="$error" mt="$3" fontSize="$sm">
-                Excluir
-              </Text>
-            </TouchableOpacity>
-          </Box>
-        )}
-        ListEmptyComponent={
-          <Text textAlign="center" color="$textLight" mt="$10">
-            Nenhuma nota ainda. Crie sua primeira nota acima!
-          </Text>
-        }
-      />
-    </Box>
+          }
+        />
+      </Card.Content>
+    </Card>
   );
 }

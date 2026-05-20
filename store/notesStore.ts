@@ -43,6 +43,7 @@ interface NotesStore {
   addNote: (note: Note) => void;
   addChecklist: (checklist: ChecklistNote) => void;
   addIdea: (idea: IdeaNote) => void;
+  addItemToChecklist: (checklistId: string, text: string) => void;
 
   deleteNote: (id: string) => void;
   toggleChecklistItem: (checklistId: string, itemId: string) => void;
@@ -70,6 +71,27 @@ export const useNotesStore = create<NotesStore>()(
           ideas: [...state.ideas, idea],
         })),
 
+      // Nova função para adicionar item em uma checklist
+      addItemToChecklist: (checklistId, text) =>
+        set((state) => ({
+          checklists: state.checklists.map((c) =>
+            c.id === checklistId
+              ? {
+                  ...c,
+                  items: [
+                    ...c.items,
+                    {
+                      id: Date.now().toString(),
+                      text: text.trim(),
+                      isCompleted: false,
+                    },
+                  ],
+                  updatedAt: new Date(),
+                }
+              : c
+          ),
+        })),
+
       deleteNote: (id) =>
         set((state) => ({
           notes: state.notes.filter((n) => n.id !== id),
@@ -88,6 +110,7 @@ export const useNotesStore = create<NotesStore>()(
                       ? { ...item, isCompleted: !item.isCompleted }
                       : item
                   ),
+                  updatedAt: new Date(),
                 }
               : c
           ),
